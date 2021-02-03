@@ -1,3 +1,3 @@
-module hashmapa
+module hmap
 
 go 1.15

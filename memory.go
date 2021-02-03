@@ -1,4 +1,4 @@
-package main
+package hmap
 
 import (
 	"sort"
@@ -24,9 +24,7 @@ func (h MemoryMap) Get(key []byte) ([]byte, error) {
 }
 
 // Set value by key
-func (h *MemoryMap) Set(key []byte, value []byte) error {
-	h.mut.Lock()
-	defer h.mut.Unlock()
+func (h MemoryMap) Set(key []byte, value []byte) error {
 	// check if key exists in hashmap
 	if _, err := h.Get(key); err != nil {
 		// if key does not exist, then add it to index
@@ -36,12 +34,14 @@ func (h *MemoryMap) Set(key []byte, value []byte) error {
 			panic(err)
 		}
 	}
+	h.mut.Lock()
+	defer h.mut.Unlock()
 	h.kv[string(key)] = value
 	return nil
 }
 
 // Delete removes key from hashmap
-func (h *MemoryMap) Delete(key []byte) error {
+func (h MemoryMap) Delete(key []byte) error {
 	h.mut.Lock()
 	defer h.mut.Unlock()
 	delete(h.kv, string(key))
@@ -50,7 +50,7 @@ func (h *MemoryMap) Delete(key []byte) error {
 }
 
 // GetRange returns list of sorted values
-func (h *MemoryMap) GetRange(from []byte, to []byte) ([]KeyValue, error) {
+func (h MemoryMap) GetRange(from []byte, to []byte) ([]KeyValue, error) {
 	h.mut.Lock()
 	defer h.mut.Unlock()
 	result := []KeyValue{}
@@ -98,9 +98,11 @@ func (h *MemoryMap) indexSort() {
 }
 
 // NewMemoryMap creates new MemoryMap instance
-func NewMemoryMap() Hashmapa {
-	return &MemoryMap{
+func NewMemoryMap() Hmap {
+	hmap := MemoryMap{
+		mut:   &sync.Mutex{},
 		kv:    make(map[string][]byte),
 		index: []string{},
 	}
+	return hmap
 }

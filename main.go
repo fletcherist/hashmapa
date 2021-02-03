@@ -1,4 +1,4 @@
-package main
+package hmap
 
 import (
 	"errors"
@@ -14,8 +14,8 @@ type KeyValue struct {
 	Value []byte
 }
 
-// Hashmapa interface
-type Hashmapa interface {
+// Hmap interface
+type Hmap interface {
 	Get(key []byte) ([]byte, error)
 	Set(key []byte, value []byte) error
 	Delete(key []byte) error
